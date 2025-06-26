@@ -25,53 +25,53 @@ eldritch_bright_white="#ffffff"    # palette 15
 eldritch_selection_bg="#bf4f8e"    # selection background
 
 # Apply theme
-set -g status-style "bg=$eldritch_bg,fg=$eldritch_fg"
+tmux set -g status-style "bg=$eldritch_bg,fg=$eldritch_fg"
 
 # Status left (session name)
-set -g status-left-style "bg=$eldritch_magenta,fg=$eldritch_bg,bold"
-set -g status-left-length 40
-set -g status-left " #S "
+tmux set -g status-left-style "bg=$eldritch_magenta,fg=$eldritch_bg,bold"
+tmux set -g status-left-length 40
+tmux set -g status-left " #S "
 
 # Status right (date and time)
-set -g status-right-style "bg=$eldritch_cyan,fg=$eldritch_bg,bold"
-set -g status-right-length 40
-set -g status-right " %Y-%m-%d %H:%M "
+tmux set -g status-right-style "bg=$eldritch_cyan,fg=$eldritch_bg,bold"
+tmux set -g status-right-length 40
+tmux set -g status-right " %Y-%m-%d %H:%M "
 
 # Window status
-set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
-set -g window-status-format " #I:#W "
+tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
+tmux set -g window-status-format " #I:#W "
 
 # Active window status
-set -g window-status-current-style "bg=$eldritch_blue,fg=$eldritch_bg,bold"
-set -g window-status-current-format " #I:#W "
+tmux set -g window-status-current-style "bg=$eldritch_blue,fg=$eldritch_bg,bold"
+tmux set -g window-status-current-format " #I:#W "
 
 # Window status separator
-set -g window-status-separator ""
+tmux set -g window-status-separator ""
 
 # Pane borders
-set -g pane-border-style "fg=$eldritch_bright_black"
-set -g pane-active-border-style "fg=$eldritch_green"
+tmux set -g pane-border-style "fg=$eldritch_bright_black"
+tmux set -g pane-active-border-style "fg=$eldritch_green"
 
 # Message styling
-set -g message-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
-set -g message-command-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
+tmux set -g message-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
+tmux set -g message-command-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
 
 # Mode styling (copy mode, etc.)
-set -g mode-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
+tmux set -g mode-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
 
 # Clock mode
-set -g clock-mode-colour "$eldritch_cyan"
+tmux set -g clock-mode-colour "$eldritch_cyan"
 
-# Bell/activity styling  
-set -g window-status-bell-style "bg=$eldritch_red,fg=$eldritch_bg,bold"
-set -g window-status-activity-style "bg=$eldritch_bright_magenta,fg=$eldritch_bg,bold"
+# Bell/activity styling
+tmux set -g window-status-bell-style "bg=$eldritch_red,fg=$eldritch_bg,bold"
+tmux set -g window-status-activity-style "bg=$eldritch_bright_magenta,fg=$eldritch_bg,bold"
 
 # Copy mode highlighting
-set -g copy-mode-match-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
-set -g copy-mode-current-match-style "bg=$eldritch_green,fg=$eldritch_bg"
+tmux set -g copy-mode-match-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
+tmux set -g copy-mode-current-match-style "bg=$eldritch_green,fg=$eldritch_bg"
 
 # Status position (you can change this if you prefer status on top)
-set -g status-position bottom
+tmux set -g status-position bottom
 
 # Refresh status more frequently
-set -g status-interval 5
+tmux set -g status-interval 5
