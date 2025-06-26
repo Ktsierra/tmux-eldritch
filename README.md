@@ -8,7 +8,7 @@ A dark, mystical theme for tmux inspired by the Eldritch colorscheme.
 
 1. Add plugin to your `~/.tmux.conf`:
    ```
-   set -g @plugin 'yourusername/tmux-eldritch'
+   set -g @plugin 'Ktsierra/tmux-eldritch'
    ```
 
 2. Press `prefix + I` (capital i, as in Install) to fetch the plugin.
@@ -17,7 +17,7 @@ A dark, mystical theme for tmux inspired by the Eldritch colorscheme.
 
 1. Clone this repo:
    ```bash
-   git clone https://github.com/yourusername/tmux-eldritch ~/.tmux/plugins/tmux-eldritch
+   git clone https://github.com/Ktsierra/tmux-eldritch ~/.tmux/plugins/tmux-eldritch
    ```
 
 2. Add this line to your `~/.tmux.conf`:
