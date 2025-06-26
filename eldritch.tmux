@@ -70,8 +70,8 @@ tmux set -g window-status-activity-style "bg=$eldritch_bright_magenta,fg=$eldrit
 tmux set -g copy-mode-match-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
 tmux set -g copy-mode-current-match-style "bg=$eldritch_green,fg=$eldritch_bg"
 
-# Status position (you can change this if you prefer status on top)
-tmux set -g status-position bottom
+# Status position (you can change this if you prefer status on bot)
+tmux set -g status-position top
 
 # Refresh status more frequently
 tmux set -g status-interval 5
