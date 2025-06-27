@@ -62,9 +62,9 @@ tmux set -g status-left " #S "
 # tmux set -g status-right " sessions: #{session_many_attached} "
 
 # Option 7: Just leave it minimal/empty
-tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-tmux set -g status-right-length 10
-tmux set -g status-right " ∴ "
+# tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
+# tmux set -g status-right-length 10
+# tmux set -g status-right " ∴ "
 
 # Window status
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
