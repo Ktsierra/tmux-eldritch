@@ -65,6 +65,9 @@ tmux set -g status-left " #S "
 # tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 # tmux set -g status-right-length 10
 # tmux set -g status-right " ∴ "
+# 
+# Option 8: Display nothing at all
+tmux set -g status-right ""
 
 # Window status
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
