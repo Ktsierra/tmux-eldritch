@@ -33,7 +33,7 @@ tmux set -g status-left " #S "
 # Option 1: System load + hostname
 tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 tmux set -g status-right-length 50
-tmux set -g status-right " #{load_avg} | #h "
+tmux set -g status-right " MEM: #{ram_percentage} | #h "
 
 # Option 2: Memory usage
 # tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
