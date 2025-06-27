@@ -1,65 +1,76 @@
 #!/usr/bin/env bash
 
 # Color definitions
-eldritch_bg="#212337"         # background
-eldritch_fg="#ebfafa"         # foreground  
-eldritch_black="#21222c"      # palette 0
-eldritch_red="#f9515d"        # palette 1
-eldritch_green="#37f499"      # palette 2 (also cursor)
-eldritch_yellow="#e9f941"     # palette 3
-eldritch_blue="#9071f4"       # palette 4 (purple)
-eldritch_magenta="#f265b5"    # palette 5
-eldritch_cyan="#04d1f9"       # palette 6
-eldritch_white="#ebfafa"      # palette 7
-eldritch_bright_black="#7081d0"    # palette 8 (purple-gray)
-eldritch_bright_red="#f16c75"      # palette 9
-eldritch_bright_green="#69F8B3"    # palette 10
-eldritch_bright_yellow="#f1fc79"   # palette 11
-eldritch_bright_blue="#a48cf2"     # palette 12 (light purple)
-eldritch_bright_magenta="#FD92CE"  # palette 13
-eldritch_bright_cyan="#66e4fd"     # palette 14
-eldritch_bright_white="#ffffff"    # palette 15
+eldritch_bg="#212337"
+eldritch_fg="#ebfafa"
+eldritch_black="#21222c"
+eldritch_red="#f9515d"
+eldritch_green="#37f499"
+eldritch_yellow="#e9f941"
+eldritch_blue="#9071f4"       # purple
+eldritch_magenta="#f265b5"
+eldritch_cyan="#04d1f9"
+eldritch_white="#ebfafa"
+eldritch_bright_black="#7081d0"    # purple-gray
+eldritch_bright_red="#f16c75"
+eldritch_bright_green="#69F8B3"
+eldritch_bright_yellow="#f1fc79"
+eldritch_bright_blue="#a48cf2"     # light purple
+eldritch_bright_magenta="#FD92CE"
+eldritch_bright_cyan="#66e4fd"
+eldritch_bright_white="#ffffff"
 eldritch_selection_bg="#7081d0"    # Changed from magenta to purple-gray
 
 # Apply theme
 tmux set -g status-style "bg=$eldritch_bg,fg=$eldritch_fg"
 
-# Status left (session name) - NOW PURPLE
+# Status left (session name) - Changed to purple
 tmux set -g status-left-style "bg=$eldritch_blue,fg=$eldritch_bg,bold"
 tmux set -g status-left-length 40
 tmux set -g status-left " #S "
 
-# Status right - ALTERNATIVES (choose one):
-# Option 1: System load + hostname
+# Status right - Working options to replace clock:
+
+# Option 1: Just hostname with eldritch symbols
 tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-tmux set -g status-right-length 50
-tmux set -g status-right " MEM: #{ram_percentage} | #h "
+tmux set -g status-right-length 30
+tmux set -g status-right " ∴ #(whoami)@#h ∴ "
 
-# Option 2: Memory usage
+# Option 2: Current directory name
+# tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
+# tmux set -g status-right-length 50
+# tmux set -g status-right " #{b:pane_current_path} "
+
+# Option 3: Git branch (shows current git branch or 'no repo')
+# tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
+# tmux set -g status-right-length 50
+# tmux set -g status-right " #(cd #{pane_current_path}; git branch --show-current 2>/dev/null || echo 'no repo') "
+
+# Option 4: Simple load average (works on most systems)
 # tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 # tmux set -g status-right-length 40
-# tmux set -g status-right " MEM: #{ram_percentage} "
+# tmux set -g status-right " #(uptime | awk '{print $(NF-2)}' | sed 's/,//') "
 
-# Option 3: Uptime
+# Option 5: User@hostname
 # tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 # tmux set -g status-right-length 40
-# tmux set -g status-right " up: #{uptime} "
+# tmux set -g status-right " #(whoami)@#h "
 
-# Option 4: Just mystical hostname
+# Option 6: Session count (if you use multiple sessions)
 # tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 # tmux set -g status-right-length 30
-# tmux set -g status-right " ∴ #h ∴ "
+# tmux set -g status-right " sessions: #{session_many_attached} "
 
-# Option 5: Pane count + window count
+# Option 7: Just leave it minimal/empty
 # tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-# tmux set -g status-right-length 40
-# tmux set -g status-right " P:#{pane_current_command} W:#{window_index} "
+# tmux set -g status-right-length 10
+# tmux set -g status-right " ∴ "
 
 # Window status
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
 tmux set -g window-status-format " #I:#W "
 
-# Active window status - NOW CYAN
+# Active window status - Changed to cyan
 tmux set -g window-status-current-style "bg=$eldritch_cyan,fg=$eldritch_bg,bold"
 tmux set -g window-status-current-format " #I:#W "
 
@@ -74,17 +85,17 @@ tmux set -g pane-active-border-style "fg=$eldritch_green"
 tmux set -g message-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
 tmux set -g message-command-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
 
-# Mode styling (copy mode, etc.) - UPDATED SELECTION
+# Mode styling (copy mode, etc.) - Updated selection color
 tmux set -g mode-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
 
-# Clock mode - keep cyan since it's pretty
+# Clock mode (still using cyan for when you do use clock commands)
 tmux set -g clock-mode-colour "$eldritch_cyan"
 
 # Bell/activity styling
 tmux set -g window-status-bell-style "bg=$eldritch_red,fg=$eldritch_bg,bold"
 tmux set -g window-status-activity-style "bg=$eldritch_bright_magenta,fg=$eldritch_bg,bold"
 
-# Copy mode highlighting - UPDATED SELECTION
+# Copy mode highlighting - Updated selection color
 tmux set -g copy-mode-match-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
 tmux set -g copy-mode-current-match-style "bg=$eldritch_green,fg=$eldritch_bg"
 
