@@ -29,58 +29,73 @@ tmux set -g status-left-style "bg=$eldritch_blue,fg=$eldritch_bg,bold"
 tmux set -g status-left-length 40
 tmux set -g status-left " #S "
 
-# Status right - Controlled by @eldritch-status-right option in .tmux.conf
-# Default to 'clock' if option is not set
-status_right_option="$(tmux show-options -gq | grep '^@eldritch-status-right' | cut -d' ' -f2)"
-if [ -z "$status_right_option" ]; then
-  status_right_option="clock"
-fi
+# Status right - Configurable and combinable components
+# Set the desired components in your .tmux.conf file
+# e.g., set -g @eldritch-status-right "cpu mem git"
 
-# Set status-right based on the chosen option
-if [ "$status_right_option" = "hostname" ]; then
-  # Option 1: Just hostname with eldritch symbols
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 30
-  tmux set -g status-right " ∴ #(whoami)@#h ∴ "
-elif [ "$status_right_option" = "path" ]; then
-  # Option 2: Current directory name
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 50
-  tmux set -g status-right " #{b:pane_current_path} "
-elif [ "$status_right_option" = "git" ]; then
-  # Option 3: Git branch
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 50
-  tmux set -g status-right " #(cd #{pane_current_path}; git branch --show-current 2>/dev/null || echo 'no repo') "
-elif [ "$status_right_option" = "load" ]; then
-  # Option 4: Simple load average
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 40
-  tmux set -g status-right " #(uptime | awk '{print $(NF-2)}' | sed 's/,//') "
-elif [ "$status_right_option" = "userhost" ]; then
-  # Option 5: User@hostname
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 40
-  tmux set -g status-right " #(whoami)@#h "
-elif [ "$status_right_option" = "sessions" ]; then
-  # Option 6: Session count
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 30
-  tmux set -g status-right " sessions: #{session_many_attached} "
-elif [ "$status_right_option" = "minimal" ]; then
-  # Option 7: Just leave it minimal/empty
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 10
-  tmux set -g status-right " ∴ "
-elif [ "$status_right_option" = "memory" ]; then
-  # Option 9: Memory usage (macOS)
-  tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-  tmux set -g status-right-length 40
-  tmux set -g status-right " Mem: #(top -l 1 | grep PhysMem | awk '{print $2}') "
-else
-  # Option 8: Display nothing at all (default)
-  tmux set -g status-right ""
-fi
+# --- Component Functions ---
+
+_get_cpu() {
+    # macOS cpu usage
+    top -l 1 | grep "CPU usage" | awk '{printf "CPU: %.0f%%", $3 + $5}'
+}
+
+_get_mem() {
+    # macOS memory usage (used/total)
+    total_mem_bytes=$(sysctl -n hw.memsize)
+    total_mem_gb=$(echo "$total_mem_bytes" | awk '{printf "%.1f", $1/1024/1024/1024}')
+    used_mem_mb=$(top -l 1 | grep PhysMem | awk '{print $2}' | sed 's/M//')
+    used_mem_gb=$(echo "$used_mem_mb" | awk '{printf "%.1f", $1/1024}')
+    printf "Mem: %sG/%sG" "$used_mem_gb" "$total_mem_gb"
+}
+
+_get_git() {
+    (cd #{pane_current_path} && git branch --show-current 2>/dev/null) || echo ""
+}
+
+_get_hostname() {
+    echo "#(whoami)@#h"
+}
+
+_get_path() {
+    echo "#{b:pane_current_path}"
+}
+
+# --- Build status-right string ---
+
+build_status_right() {
+    local components_to_show=$(tmux show-options -gqv @eldritch-status-right)
+    local final_status=""
+    local separator=" | "
+
+    for component in $components_to_show; do
+        local output=""
+        case "$component" in
+            cpu) output=$(_get_cpu) ;;
+            mem) output=$(_get_mem) ;;
+            git) output=$(_get_git) ;;
+            host) output=$(_get_hostname) ;;
+            path) output=$(_get_path) ;;
+        esac
+
+        if [ -n "$output" ]; then
+            if [ -n "$final_status" ]; then
+                final_status="$final_status$separator"
+            fi
+            final_status="$final_status$output"
+        fi
+    done
+
+    echo " $final_status "
+}
+
+# --- Apply settings ---
+
+# Set a generous length to accommodate combined components
+tmux set -g status-right-length 100
+tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
+tmux set -g status-right "#(build_status_right)"
+
 
 # Window status
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
