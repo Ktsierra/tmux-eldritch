@@ -44,28 +44,17 @@ tmux set -g @eldritch-script-dir "$(dirname "$0")/scripts"
 # --- Build the final status-right string using tmux format strings ---
 # This will make the status bar dynamic and update automatically when options change.
 
-status_right_format_string=" " # Start with a leading space for padding
+# --- Build the final status-right string using tmux format strings ---
+# This will make the status bar dynamic and update automatically when options change.
 
-# CPU
-status_right_format_string+="#{?@eldritch-cpu-status,#{#{@eldritch-script-dir}/cpu.sh},}"
-
-# Memory
-status_right_format_string+="#{?@eldritch-mem-status,#{?@eldritch-cpu-status, | ,}#{#{@eldritch-script-dir}/memory.sh},}"
-
-# Memory Pressure
-status_right_format_string+="#{?@eldritch-mem-pressure-status,#{?@eldritch-mem-status, | ,}#{#{@eldritch-script-dir}/memory_pressure.sh},}"
-
-# Git
-status_right_format_string+="#{?@eldritch-git-status,#{?@eldritch-mem-pressure-status, | ,}#{#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)},}"
-
-# Host
-status_right_format_string+="#{?@eldritch-host-status,#{?@eldritch-git-status, | ,}#{#(whoami)@#h},}"
-
-# Path
-status_right_format_string+="#{?@eldritch-path-status,#{?@eldritch-host-status, | ,}#{b:pane_current_path},}"
-
-# Set the final, constructed string to the status-right option
-tmux set -g status-right "$status_right_format_string " # Add trailing space for padding
+tmux set -g status-right "\
+#{?@eldritch-cpu-status, #(@eldritch-script-dir/cpu.sh),}\
+#{?@eldritch-mem-status, #{?@eldritch-cpu-status, | ,}#(@eldritch-script-dir/memory.sh),}\
+#{?@eldritch-mem-pressure-status, #{?@eldritch-mem-status, | ,}#(@eldritch-script-dir/memory_pressure.sh),}\
+#{?@eldritch-git-status, #{?@eldritch-mem-pressure-status, | ,}#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null),}\
+#{?@eldritch-host-status, #{?@eldritch-git-status, | ,}#(whoami)@#h,}\
+#{?@eldritch-path-status, #{?@eldritch-host-status, | ,}#{b:pane_current_path},}\
+"
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
