@@ -41,9 +41,6 @@ tmux set -g status-left " #S "
 # Define script directory
 script_dir="$(dirname "$0")/scripts"
 
-# Debugging: Display the resolved script_dir
-tmux display-message "Resolved script_dir: $script_dir"
-
 # Define component strings with bash-expanded script_dir
 cpu_component="#($script_dir/cpu.sh)"
 mem_component="#($script_dir/memory.sh)"
