@@ -29,60 +29,70 @@ tmux set -g status-left-style "bg=$eldritch_blue,fg=$eldritch_bg,bold"
 tmux set -g status-left-length 40
 tmux set -g status-left " #S "
 
-# Status right - Configurable and combinable components
-# Set the desired components in your .tmux.conf file, separated by spaces.
-# e.g., set -g @eldritch-status-right "cpu mem git"
+# Status right - Configurable components
+# Control each component individually in your .tmux.conf:
+# set -g @eldritch-cpu-status 'on'
+# set -g @eldritch-mem-status 'on'
+# set -g @eldritch-git-status 'on'
+# set -g @eldritch-host-status 'on'
+# set -g @eldritch-path-status 'on'
 
-# Available components: cpu, mem, git, host, path
+# --- Component Definitions (Tmux format strings) ---
+# Each component is a direct tmux format string, including shell commands.
+# They are only included in the final status-right string if enabled.
 
-# Set a generous length to accommodate combined components
-tmux set -g status-right-length 100
+# CPU Usage (macOS specific)
+cpu_component="#(top -l 1 | grep 'CPU usage' | awk '{printf \"CPU: %.0f%%\", $3 + $5}')"
+
+# Memory Usage (macOS specific)
+mem_component="#(used=$(top -l 1 | grep PhysMem | awk '{print $2}'); total=$(sysctl -n hw.memsize | awk '{printf \"%.0fG\", $1/1024/1024/1024}'); printf \"Mem: %s/%s\" \"$used\" \"$total\")"
+
+# Git Branch
+git_component=" #(branch=$(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null); if [ -n \"$branch\" ]; then echo \"Git: $branch\"; fi)"
+
+# User@Hostname
+host_component=" #(whoami)@#h"
+
+# Current Path
+path_component=" #{b:pane_current_path}"
+
+# --- Build the final status-right string ---
+# This script runs ONCE when eldritch.tmux is sourced.
+# It checks each component's option and builds the final status-right string.
+
+final_status_right=""
+separator=" | "
+
+# Function to append component if enabled
+append_component() {
+    local option_name="$1"
+    local component_string="$2"
+    if [ "$(tmux show-options -gqv "$option_name")" = "on" ]; then
+        if [ -n "$final_status_right" ]; then
+            final_status_right="$final_status_right$separator"
+        fi
+        final_status_right="$final_status_right$component_string"
+    fi
+}
+
+# Append components based on user settings
+append_component @eldritch-cpu-status "$cpu_component"
+append_component @eldritch-mem-status "$mem_component"
+append_component @eldritch-git-status "$git_component"
+append_component @eldritch-host-status "$host_component"
+append_component @eldritch-path-status "$path_component"
+
+# --- Apply Settings ---
+tmux set -g status-right-length 120 # Increased length for more components
 tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 
-# The entire script is placed inside the status-right option to ensure
-# functions are defined in the same shell context where they are called.
-tmux set -g status-right "#( \
-    _get_cpu() { \
-        top -l 1 | grep \"CPU usage\" | awk '{printf \"CPU: %.0f%%\", $3 + $5}'; \
-    }; \
-    _get_mem() { \
-        total_mem_bytes=$(sysctl -n hw.memsize); \
-        total_mem_gb=$(echo \"$total_mem_bytes\" | awk '{printf \"%.1f\", $1/1024/1024/1024}'); \
-        used_mem_mb=$(top -l 1 | grep PhysMem | awk '{print $2}' | sed 's/M//'); \
-        used_mem_gb=$(echo \"$used_mem_mb\" | awk '{printf \"%.1f\", $1/1024}'); \
-        printf \"Mem: %sG/%sG\" \"$used_mem_gb\" \"$total_mem_gb\"; \
-    }; \
-    _get_git() { \
-        branch=$(cd #{pane_current_path} && git branch --show-current 2>/dev/null); \
-        if [ -n \"$branch\" ]; then echo \"Git: $branch\"; fi; \
-    }; \
-    _get_hostname() { \
-        echo \"#(whoami)@#h\"; \
-    }; \
-    _get_path() { \
-        echo \"#{b:pane_current_path}\"; \
-    }; \
-    components_to_show=$(tmux show-options -gqv @eldritch-status-right); \
-    final_status=\"\"; \
-    separator=\" | \"; \
-    for component in $components_to_show; do \
-        output=\"\"; \
-        case \"$component\" in \
-            cpu) output=$(_get_cpu) ;; \
-            mem) output=$(_get_mem) ;; \
-            git) output=$(_get_git) ;; \
-            host) output=$(_get_hostname) ;; \
-            path) output=$(_get_path) ;; \
-        esac; \
-        if [ -n \"$output\" ]; then \
-            if [ -n \"$final_status\" ]; then \
-                final_status=\""$final_status"$separator\"; \
-            fi; \
-            final_status=\""$final_status"$output\"; \
-        fi; \
-    done; \
-    echo \" $final_status \"; \
-)
+# Set the final, constructed string to the status-right option
+# Add padding spaces around the final string
+if [ -n "$final_status_right" ]; then
+    tmux set -g status-right " $final_status_right "
+else
+    tmux set -g status-right ""
+fi
 
 
 # Window status
