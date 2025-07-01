@@ -34,6 +34,7 @@ tmux set -g status-left " #S "
 # set -g @eldritch-cpu-status 'on'
 # set -g @eldritch-mem-status 'on'
 # set -g @eldritch-git-status 'on'
+# set -g @eldritch-mem-pressure-status 'on'
 # set -g @eldritch-host-status 'on'
 # set -g @eldritch-path-status 'on'
 
@@ -42,10 +43,14 @@ tmux set -g status-left " #S "
 # They are only included in the final status-right string if enabled.
 
 # CPU Usage (macOS specific) - Averages over a longer interval for accuracy
-cpu_component="#(/Users/ktsierra/Projects/Personal/tmux-eldritch/scripts/cpu.sh)"
+script_dir="$(dirname "$0")/scripts"
+cpu_component="#($script_dir/cpu.sh)"
 
 # Memory Usage (macOS specific) - Shows used/total memory in GB
-mem_component="#(/Users/ktsierra/Projects/Personal/tmux-eldritch/scripts/memory.sh)"
+mem_component="#($script_dir/memory.sh)"
+
+# Memory Pressure (macOS specific)
+mem_pressure_component="#($script_dir/memory_pressure.sh)"
 
 # Git Branch
 git_component="#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)"
@@ -76,11 +81,8 @@ append_component() {
 }
 
 # Append components based on user settings
-append_component @eldritch-cpu-status "$cpu_component"
-append_component @eldritch-mem-status "$mem_component"
-append_component @eldritch-git-status "$git_component"
-append_component @eldritch-host-status "$host_component"
-append_component @eldritch-path-status "$path_component"
+# Temporarily force memory pressure component for debugging
+final_status_right="$mem_pressure_component"
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
