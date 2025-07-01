@@ -38,23 +38,10 @@ tmux set -g status-left " #S "
 # set -g @eldritch-host-status 'on'
 # set -g @eldritch-path-status 'on'
 
-# Set the script directory as a tmux option, so it can be used in format strings.
-tmux set -g @eldritch-script-dir "$(dirname "$0")/scripts"
-
-# --- Build the final status-right string using tmux format strings ---
+# Build the final status-right string using tmux format strings
 # This will make the status bar dynamic and update automatically when options change.
 
-# --- Build the final status-right string using tmux format strings ---
-# This will make the status bar dynamic and update automatically when options change.
-
-tmux set -g status-right "\
-#{?@eldritch-cpu-status, #(@eldritch-script-dir/cpu.sh),}\
-#{?@eldritch-mem-status, #{?@eldritch-cpu-status, | ,}#(@eldritch-script-dir/memory.sh),}\
-#{?@eldritch-mem-pressure-status, #{?@eldritch-mem-status, | ,}#(@eldritch-script-dir/memory_pressure.sh),}\
-#{?@eldritch-git-status, #{?@eldritch-mem-pressure-status, | ,}#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null),}\
-#{?@eldritch-host-status, #{?@eldritch-git-status, | ,}#(whoami)@#h,}\
-#{?@eldritch-path-status, #{?@eldritch-host-status, | ,}#{b:pane_current_path},}\
-"
+tmux set -g status-right "#(echo 'TEST')"
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
