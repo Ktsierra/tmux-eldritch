@@ -33,69 +33,43 @@ tmux set -g status-left " #S "
 # Control each component individually in your .tmux.conf:
 # set -g @eldritch-cpu-status 'on'
 # set -g @eldritch-mem-status 'on'
-# set -g @eldritch-git-status 'on'
 # set -g @eldritch-mem-pressure-status 'on'
+# set -g @eldritch-git-status 'on'
 # set -g @eldritch-host-status 'on'
 # set -g @eldritch-path-status 'on'
 
-# --- Component Definitions (Tmux format strings) ---
-# Each component is a direct tmux format string, including shell commands.
-# They are only included in the final status-right string if enabled.
+# Set the script directory as a tmux option, so it can be used in format strings.
+tmux set -g @eldritch-script-dir "$(dirname "$0")/scripts"
 
-# CPU Usage (macOS specific) - Averages over a longer interval for accuracy
-script_dir="$(dirname "$0")/scripts"
-cpu_component="#($script_dir/cpu.sh)"
+# --- Build the final status-right string using tmux format strings ---
+# This will make the status bar dynamic and update automatically when options change.
 
-# Memory Usage (macOS specific) - Shows used/total memory in GB
-mem_component="#($script_dir/memory.sh)"
+status_right_format_string=" " # Start with a leading space for padding
 
-# Memory Pressure (macOS specific)
-mem_pressure_component="#($script_dir/memory_pressure.sh)"
+# CPU
+status_right_format_string+="#{?@eldritch-cpu-status,#{#{@eldritch-script-dir}/cpu.sh},}"
 
-# Git Branch
-git_component="#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)"
+# Memory
+status_right_format_string+="#{?@eldritch-mem-status,#{?@eldritch-cpu-status, | ,}#{#{@eldritch-script-dir}/memory.sh},}"
 
-# User@Hostname
-host_component=" #(whoami)@#h"
+# Memory Pressure
+status_right_format_string+="#{?@eldritch-mem-pressure-status,#{?@eldritch-mem-status, | ,}#{#{@eldritch-script-dir}/memory_pressure.sh},}"
 
-# Current Path
-path_component=" #{b:pane_current_path}"
+# Git
+status_right_format_string+="#{?@eldritch-git-status,#{?@eldritch-mem-pressure-status, | ,}#{#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)},}"
 
-# --- Build the final status-right string ---
-# This script runs ONCE when eldritch.tmux is sourced.
-# It checks each component's option and builds the final status-right string.
+# Host
+status_right_format_string+="#{?@eldritch-host-status,#{?@eldritch-git-status, | ,}#{#(whoami)@#h},}"
 
-final_status_right=""
-separator=" | "
+# Path
+status_right_format_string+="#{?@eldritch-path-status,#{?@eldritch-host-status, | ,}#{b:pane_current_path},}"
 
-# Function to append component if enabled
-append_component() {
-    local option_name="$1"
-    local component_string="$2"
-    if [ "$(tmux show-options -gqv "$option_name")" = "on" ]; then
-        if [ -n "$final_status_right" ]; then
-            final_status_right="$final_status_right$separator"
-        fi
-        final_status_right="$final_status_right$component_string"
-    fi
-}
-
-# Append components based on user settings
-# Temporarily force memory pressure component for debugging
-final_status_right="$mem_pressure_component"
+# Set the final, constructed string to the status-right option
+tmux set -g status-right "$status_right_format_string " # Add trailing space for padding
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
 tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
-
-# Set the final, constructed string to the status-right option
-# Add padding spaces around the final string
-if [ -n "$final_status_right" ]; then
-    tmux set -g status-right " $final_status_right "
-else
-    tmux set -g status-right ""
-fi
-
 
 # Window status
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
