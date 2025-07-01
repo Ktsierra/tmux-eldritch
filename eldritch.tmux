@@ -38,10 +38,49 @@ tmux set -g status-left " #S "
 # set -g @eldritch-host-status 'on'
 # set -g @eldritch-path-status 'on'
 
+# Define script directory
+script_dir="$(dirname "$0")/scripts"
+
+# Debugging: Display the resolved script_dir
+tmux display-message "Resolved script_dir: $script_dir"
+
+# Define component strings with bash-expanded script_dir
+cpu_component="#($script_dir/cpu.sh)"
+mem_component="#($script_dir/memory.sh)"
+mem_pressure_component="#($script_dir/memory_pressure.sh)"
+git_component="#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)"
+host_component="#(whoami)@#h"
+path_component="#{b:pane_current_path}"
+
 # Build the final status-right string using tmux format strings
 # This will make the status bar dynamic and update automatically when options change.
 
-tmux set -g status-right "#(echo 'TEST')"
+final_status_right=" " # Start with a leading space for padding
+
+# Function to append component if enabled
+append_component() {
+    local option_name="$1"
+    local component_string="$2"
+    if [ "$(tmux show-options -gqv "$option_name")" = "on" ]; then
+        if [ "${final_status_right}" != " " ]; then # Check if not just initial space
+            final_status_right+=" | "
+        fi
+        final_status_right+="$component_string"
+    fi
+}
+
+# Append components based on user settings
+append_component @eldritch-cpu-status "$cpu_component"
+append_component @eldritch-mem-status "$mem_component"
+append_component @eldritch-mem-pressure-status "$mem_pressure_component"
+append_component @eldritch-git-status "$git_component"
+append_component @eldritch-host-status "$host_component"
+append_component @eldritch-path-status "$path_component"
+
+# Debugging: Display the final status_right_format_string
+tmux display-message "Final status_right: ${final_status_right}"
+
+tmux set -g status-right "${final_status_right} " # Add trailing space for padding
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
@@ -51,7 +90,7 @@ tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
 tmux set -g window-status-format " #I:#W "
 
-# Active window status - Changed to cyan
+# Active window status
 tmux set -g window-status-current-style "bg=$eldritch_cyan,fg=$eldritch_bg,bold"
 tmux set -g window-status-current-format " #I:#W "
 
@@ -66,17 +105,17 @@ tmux set -g pane-active-border-style "fg=$eldritch_green"
 tmux set -g message-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
 tmux set -g message-command-style "bg=$eldritch_yellow,fg=$eldritch_bg,bold"
 
-# Mode styling (copy mode, etc.) - Updated selection color
+# Mode styling (copy mode, etc.)
 tmux set -g mode-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
 
-# Clock mode (still using cyan for when you do use clock commands)
+# Clock mode
 tmux set -g clock-mode-colour "$eldritch_cyan"
 
 # Bell/activity styling
 tmux set -g window-status-bell-style "bg=$eldritch_red,fg=$eldritch_bg,bold"
 tmux set -g window-status-activity-style "bg=$eldritch_bright_magenta,fg=$eldritch_bg,bold"
 
-# Copy mode highlighting - Updated selection color
+# Copy mode highlighting
 tmux set -g copy-mode-match-style "bg=$eldritch_selection_bg,fg=$eldritch_fg"
 tmux set -g copy-mode-current-match-style "bg=$eldritch_green,fg=$eldritch_bg"
 
