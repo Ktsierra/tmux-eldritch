@@ -74,9 +74,6 @@ append_component @eldritch-git-status "$git_component"
 append_component @eldritch-host-status "$host_component"
 append_component @eldritch-path-status "$path_component"
 
-# Debugging: Display the final status_right_format_string
-tmux display-message "Final status_right: ${final_status_right}"
-
 tmux set -g status-right "${final_status_right} " # Add trailing space for padding
 
 # --- Apply Settings ---
