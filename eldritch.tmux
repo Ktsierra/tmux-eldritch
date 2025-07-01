@@ -42,19 +42,10 @@ tmux set -g status-left " #S "
 # They are only included in the final status-right string if enabled.
 
 # CPU Usage (macOS specific) - Averages over a longer interval for accuracy
-cpu_component="#(top -l 2 | grep 'CPU usage' | tail -1 | awk '{gsub(/%/,""); printf "%.0f%%%%", $3 + $5}')"
+cpu_component="#(/Users/ktsierra/Projects/Personal/tmux-eldritch/scripts/cpu.sh)"
 
 # Memory Usage (macOS specific) - Shows used/total memory in GB
-mem_component="#(total_gb=$(sysctl -n hw.memsize | awk '{printf "%d", $1/1024/1024/1024}'); top -l 1 | grep PhysMem | awk -v total=$total_gb '{
-    used_str = $2;
-    if (used_str ~ /G/) {
-        gsub(/G/, "", used_str);
-        printf("%.1f/%dGb", used_str, total);
-    } else if (used_str ~ /M/) {
-        gsub(/M/, "", used_str);
-        printf("%.1f/%dGb", used_str/1024, total);
-    }
-}')"
+mem_component="#(/Users/ktsierra/Projects/Personal/tmux-eldritch/scripts/memory.sh)"
 
 # Git Branch
 git_component="#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)"
