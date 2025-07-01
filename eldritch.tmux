@@ -41,14 +41,14 @@ tmux set -g status-left " #S "
 # Each component is a direct tmux format string, including shell commands.
 # They are only included in the final status-right string if enabled.
 
-# CPU Usage (macOS specific) - Shows user + sys CPU usage
-cpu_component="#(top -l 1 | grep 'CPU usage' | sed 's/%//g' | awk '{printf \"CPU: %.0f%%%%\", $3 + $5}')"
+# CPU Usage (macOS specific) - Shows user + sys CPU usage as a percentage
+cpu_component="#(ps -A -o %cpu | awk '{s+=$1} END {printf \"%.0f%%%%\", s}')"
 
-# Memory Usage (macOS specific) - Shows memory usage as a percentage
-mem_component="#(printf 'Mem: %s' $(memory_pressure | awk '/System-wide memory free percentage:/ {printf \"%.0f%%%%\", 100 - $5}'))"
+# Memory Usage (macOS specific) - Shows used/total memory in GB
+mem_component="#(used=$(top -l 1 | grep PhysMem | awk '{print $2}' | sed 's/M//'); total=$(sysctl -n hw.memsize | awk '{printf \"%.0f\", $1/1024/1024/1024}'); printf \"%s/%sGb\" \"$used\" \"$total\")"
 
 # Git Branch
-git_component="#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's/^/Git: /')"
+git_component="#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null)"
 
 # User@Hostname
 host_component=" #(whoami)@#h"
