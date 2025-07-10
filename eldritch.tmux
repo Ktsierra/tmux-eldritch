@@ -25,9 +25,8 @@ eldritch_selection_bg="#7081d0"    # Changed from magenta to purple-gray
 tmux set -g status-style "bg=$eldritch_bg,fg=$eldritch_fg"
 
 # Status left (session name) - Changed to purple
-tmux set -g status-left-style "bg=$eldritch_blue,fg=$eldritch_bg,bold"
 tmux set -g status-left-length 40
-tmux set -g status-left " #S "
+tmux set -g status-left "#[fg=${eldritch_blue},bg=${eldritch_bg},nobold]#[fg=${eldritch_bg},bg=${eldritch_blue}] #S #[fg=${eldritch_blue},bg=${eldritch_bg},nobold]"
 
 # Status right - Configurable components
 # Control each component individually in your .tmux.conf:
@@ -74,7 +73,7 @@ append_component @eldritch-git-status "$git_component"
 append_component @eldritch-host-status "$host_component"
 append_component @eldritch-path-status "$path_component"
 
-tmux set -g status-right "${final_status_right} " # Add trailing space for padding
+tmux set -g status-right "#[fg=${eldritch_green},bg=${eldritch_bg},nobold]#[fg=${eldritch_bg},bg=${eldritch_green}]${final_status_right}#[fg=${eldritch_green},bg=${eldritch_bg},nobold] " # Add trailing space for padding
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
@@ -82,11 +81,11 @@ tmux set -g status-right-style "bg=$eldritch_green,fg=$eldritch_bg,bold"
 
 # Window status
 tmux set -g window-status-style "bg=$eldritch_bg,fg=$eldritch_bright_black"
-tmux set -g window-status-format " #I:#W "
+tmux set -g window-status-format "#[fg=${eldritch_bright_black},bg=${eldritch_bg},nobold]#[fg=${eldritch_bright_black},bg=${eldritch_bg}] #I:#W #[fg=${eldritch_bg},bg=${eldritch_bg},nobold]"
 
 # Active window status
 tmux set -g window-status-current-style "bg=$eldritch_cyan,fg=$eldritch_bg,bold"
-tmux set -g window-status-current-format " #I:#W "
+tmux set -g window-status-current-format "#[fg=${eldritch_bg},bg=${eldritch_cyan},nobold]#[fg=${eldritch_bg},bg=${eldritch_cyan}] #I:#W #[fg=${eldritch_cyan},bg=${eldritch_bg},nobold]"
 
 # Window status separator
 tmux set -g window-status-separator ""
