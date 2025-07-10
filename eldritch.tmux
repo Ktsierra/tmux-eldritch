@@ -58,8 +58,8 @@ append_component() {
     local option_name="$1"
     local component_string="$2"
     if [ "$(tmux show-options -gqv "$option_name")" = "on" ]; then
-        if [ "${final_status_right}" != " " ]; then # Check if not just initial space
-            final_status_right+="  "
+        if [ -n "${final_status_right}" ]; then
+            final_status_right+=" #[fg=${eldritch_bg},bg=${eldritch_green}]#[fg=${eldritch_green},bg=${eldritch_bg}] "
         fi
         final_status_right+="$component_string"
     fi
