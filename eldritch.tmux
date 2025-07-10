@@ -73,7 +73,7 @@ append_component @eldritch-git-status "$git_component"
 append_component @eldritch-host-status "$host_component"
 append_component @eldritch-path-status "$path_component"
 
-tmux set -g status-right "#[fg=${eldritch_green},bg=${eldritch_bg},nobold]#[fg=${eldritch_bg},bg=${eldritch_green}]${final_status_right}#[fg=${eldritch_green},bg=${eldritch_bg},nobold]  " # Add trailing space for padding
+tmux set -g status-right "#[fg=${eldritch_green},bg=${eldritch_bg},nobold]#[fg=${eldritch_bg},bg=${eldritch_green}]${final_status_right}#[fg=${eldritch_green},bg=${eldritch_bg},nobold] " # Add trailing space for padding
 
 # --- Apply Settings ---
 tmux set -g status-right-length 120 # Increased length for more components
