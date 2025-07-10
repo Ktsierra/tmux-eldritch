@@ -59,7 +59,7 @@ append_component() {
     local component_string="$2"
     if [ "$(tmux show-options -gqv "$option_name")" = "on" ]; then
         if [ -n "${final_status_right}" ]; then
-            final_status_right+=" #[fg=${eldritch_bg},bg=${eldritch_green}]#[fg=${eldritch_green},bg=${eldritch_bg}]#[fg=${eldritch_bg},bg=${eldritch_green}]"
+            final_status_right+=" #[fg=${eldritch_bg},bg=${eldritch_green}]#[fg=${eldritch_green},bg=${eldritch_bg}]#[fg=${eldritch_bg},bg=${eldritch_green}] "
         fi
         final_status_right+="$component_string"
     fi
